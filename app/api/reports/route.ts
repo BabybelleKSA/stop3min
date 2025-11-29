@@ -1,29 +1,87 @@
 import type { ReportStatus } from "@/lib/constants";
-import { REPORT_STATUSES } from "@/lib/constants";
+import { CARD_TYPES, REPORT_STATUSES } from "@/lib/constants";
 import { enforceApiAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { reportCreateSchema, reportsQuerySchema } from "@/lib/validators";
+import { reportsQuerySchema } from "@/lib/validators";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => ({}));
-  const parsed = reportCreateSchema.safeParse(body);
+const normalizeOptionalString = (value: unknown) => {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed.length ? trimmed : null;
+};
 
-  if (!parsed.success) {
-    const firstError = parsed.error.issues[0]?.message || "Invalid data";
-    return NextResponse.json({ error: firstError }, { status: 400 });
+export async function POST(req: NextRequest) {
+  const body = await req.json().catch(() => ({} as Record<string, unknown>));
+
+  const storeName = normalizeOptionalString(body.storeName);
+  const addressLine1 = normalizeOptionalString(body.addressLine1);
+  const city = normalizeOptionalString(body.city);
+  const stateRaw = normalizeOptionalString(body.state);
+  const zip = normalizeOptionalString(body.zip);
+
+  if (!storeName) return NextResponse.json({ error: "Store name is required" }, { status: 400 });
+  if (!addressLine1) return NextResponse.json({ error: "Address is required" }, { status: 400 });
+  if (!city) return NextResponse.json({ error: "City is required" }, { status: 400 });
+  if (!stateRaw || stateRaw.length !== 2)
+    return NextResponse.json({ error: "State must be 2 letters" }, { status: 400 });
+  if (!zip) return NextResponse.json({ error: "ZIP is required" }, { status: 400 });
+
+  const minAmount = Number(body.minAmount);
+  if (!Number.isFinite(minAmount) || minAmount <= 0) {
+    return NextResponse.json({ error: "Minimum amount must be greater than 0" }, { status: 400 });
   }
 
-  const { consentConfirmed, ...data } = parsed.data;
+  const visitedAt =
+    typeof body.visitedAt === "string" && body.visitedAt.trim()
+      ? new Date(body.visitedAt as string)
+      : null;
+  const visitedDate = visitedAt && !Number.isNaN(visitedAt.getTime()) ? visitedAt : null;
+
+  const cardTypeInput = normalizeOptionalString(body.cardType);
+  const cardType = cardTypeInput && CARD_TYPES.includes(cardTypeInput as any) ? cardTypeInput : "UNKNOWN";
+  const signText = normalizeOptionalString(body.signText);
+  const description = normalizeOptionalString(body.description);
+  const addressLine2 = normalizeOptionalString(body.addressLine2);
+  const photoUrl = normalizeOptionalString(body.photoUrl);
+  const reporterEmail = normalizeOptionalString(body.reporterEmail);
+  const reporterHandle = normalizeOptionalString(body.reporterHandle);
+
+  const consentToContact =
+    body.consentToContact === true ||
+    body.consentToContact === "true" ||
+    body.consentToContact === "on" ||
+    body.consentToContact === 1;
+
+  const status = "NEW";
+  const country = "USA";
 
   try {
-    await prisma.report.create({
+    const report = await prisma.report.create({
       data: {
-        ...data,
-        visitedAt: data.visitedAt ? new Date(data.visitedAt) : undefined
+        storeName,
+        addressLine1,
+        addressLine2,
+        city,
+        state: stateRaw.toUpperCase(),
+        zip,
+        country,
+        cardType,
+        minAmount,
+        signText,
+        description,
+        visitedAt: visitedDate,
+        photoUrl,
+        reporterEmail,
+        reporterHandle,
+        consentToContact,
+        status,
+        networksReportedTo: null,
+        followUpNotes: null
       }
     });
-    return NextResponse.json({ success: true });
+
+    return NextResponse.json({ ok: true, id: report.id });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Failed to save report" }, { status: 500 });
