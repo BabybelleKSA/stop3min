@@ -1,10 +1,10 @@
 import type { CardType, ReportStatus } from "@/lib/constants";
 import { CARD_TYPES, REPORT_STATUSES } from "@/lib/constants";
-import { StatusBadge } from "../../../../components/StatusBadge";
-import { cardTypeLabels, formatDate, formatMoney, statusLabels } from "../../../../lib/utils";
+import { StatusBadge } from "@/components/StatusBadge";
+import { cardTypeLabels, formatDate, formatMoney, statusLabels } from "@/lib/utils";
 import Link from "next/link";
 import type { Route } from "next";
-import { prisma } from "../../../../lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 const PAGE_SIZE = 20;
 

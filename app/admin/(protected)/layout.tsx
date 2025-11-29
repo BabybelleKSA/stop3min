@@ -1,5 +1,5 @@
-import { AdminNav } from "../../../components/AdminNav";
-import { requireAdminSession } from "../../../lib/auth";
+import { AdminNav } from "@/components/AdminNav";
+import { requireAdminSession } from "@/lib/auth";
 
 export default function AdminProtectedLayout({ children }: { children: React.ReactNode }) {
   requireAdminSession();

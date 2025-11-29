@@ -1,10 +1,10 @@
 import type { CardType, ReportStatus } from "@/lib/constants";
 import { CARD_TYPES, REPORT_STATUSES } from "@/lib/constants";
-import { StatusBadge } from "../../../../../components/StatusBadge";
-import { cardTypeLabels, formatDate, formatMoney, statusLabels } from "../../../../../lib/utils";
+import { StatusBadge } from "@/components/StatusBadge";
+import { cardTypeLabels, formatDate, formatMoney, statusLabels } from "@/lib/utils";
 import { notFound } from "next/navigation";
-import { prisma } from "../../../../../lib/prisma";
-import { ReportActions } from "./report-actions";
+import { prisma } from "@/lib/prisma";
+import { ReportActions } from "@/app/admin/(protected)/reports/[id]/report-actions";
 
 type Props = {
   params: { id: string };

@@ -1,9 +1,9 @@
 import type { ReportStatus } from "@/lib/constants";
 import { REPORT_STATUSES } from "@/lib/constants";
+import { enforceApiAuth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { reportCreateSchema, reportsQuerySchema } from "@/lib/validators";
 import { NextRequest, NextResponse } from "next/server";
-import { enforceApiAuth } from "../../../lib/auth";
-import { prisma } from "../../../lib/prisma";
-import { reportCreateSchema, reportsQuerySchema } from "../../../lib/validators";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));

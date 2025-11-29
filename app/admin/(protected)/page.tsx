@@ -1,4 +1,4 @@
-import { getAdminStats } from "../../../lib/stats";
+import { getAdminStats } from "@/lib/stats";
 
 export default async function AdminDashboardPage() {
   const stats = await getAdminStats();

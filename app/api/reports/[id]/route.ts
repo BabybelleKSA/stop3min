@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "../../../../lib/prisma";
-import { enforceApiAuth } from "../../../../lib/auth";
-import { reportUpdateSchema } from "../../../../lib/validators";
+import { enforceApiAuth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { reportUpdateSchema } from "@/lib/validators";
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const unauthorized = enforceApiAuth(req);

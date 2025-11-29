@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import type { ReportStatus } from "@/lib/constants";
 import { REPORT_STATUSES } from "@/lib/constants";
-import { enforceApiAuth } from "../../../../lib/auth";
-import { prisma } from "../../../../lib/prisma";
+import { enforceApiAuth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 
 function escapeCSV(value: string | number | boolean | null | undefined) {
   if (value === null || value === undefined) return "";
