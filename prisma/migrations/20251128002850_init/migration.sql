@@ -1,0 +1,25 @@
+-- CreateTable
+CREATE TABLE "Report" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "storeName" TEXT NOT NULL,
+    "addressLine1" TEXT NOT NULL,
+    "addressLine2" TEXT,
+    "city" TEXT NOT NULL,
+    "state" TEXT NOT NULL,
+    "zip" TEXT NOT NULL,
+    "country" TEXT NOT NULL DEFAULT 'US',
+    "cardType" TEXT NOT NULL,
+    "minAmount" REAL NOT NULL,
+    "signText" TEXT,
+    "description" TEXT,
+    "visitedAt" DATETIME,
+    "photoUrl" TEXT,
+    "reporterEmail" TEXT,
+    "reporterHandle" TEXT,
+    "consentToContact" BOOLEAN NOT NULL DEFAULT false,
+    "status" TEXT NOT NULL DEFAULT 'NEW',
+    "networksReportedTo" TEXT,
+    "followUpNotes" TEXT
+);
