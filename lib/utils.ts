@@ -1,13 +1,13 @@
-import { CardType, ReportStatus } from "@prisma/client";
+import type { CardType, ReportStatus } from "@/lib/constants";
 
 export function formatDate(date?: Date | string | null) {
-  if (!date) return "—";
+  if (!date) return "";
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString();
 }
 
 export function formatMoney(value?: number | null) {
-  if (value === undefined || value === null) return "—";
+  if (value === undefined || value === null) return "";
   return `$${value.toFixed(2)}`;
 }
 
@@ -20,8 +20,8 @@ export const cardTypeLabels: Record<CardType, string> = {
 
 export const statusLabels: Record<ReportStatus, string> = {
   NEW: "New",
-  IN_REVIEW: "In review",
-  COMPLAINT_FILED: "Complaint filed",
+  IN_REVIEW: "In Review",
+  COMPLAINT_FILED: "Complaint Filed",
   RESOLVED: "Resolved",
   DISMISSED: "Dismissed"
 };

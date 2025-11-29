@@ -1,8 +1,9 @@
+import type { CardType, ReportStatus } from "@/lib/constants";
+import { CARD_TYPES, REPORT_STATUSES } from "@/lib/constants";
+import { StatusBadge } from "../../../../components/StatusBadge";
+import { cardTypeLabels, formatDate, formatMoney, statusLabels } from "../../../../lib/utils";
 import Link from "next/link";
 import { prisma } from "../../../../lib/prisma";
-import { StatusBadge } from "../../../../components/StatusBadge";
-import { formatDate, cardTypeLabels, formatMoney } from "../../../../lib/utils";
-import { ReportStatus } from "@prisma/client";
 
 const PAGE_SIZE = 20;
 
@@ -14,12 +15,15 @@ type SearchParams = {
   search?: string;
 };
 
+const normalizeStatus = (value?: string | null): ReportStatus | undefined =>
+  value ? (REPORT_STATUSES.find((s) => s === value) as ReportStatus | undefined) : undefined;
+
+const normalizeCardType = (value?: string | null): CardType =>
+  (value && (CARD_TYPES.find((c) => c === value) as CardType | undefined)) || "UNKNOWN";
+
 export default async function ReportsListPage({ searchParams }: { searchParams: SearchParams }) {
   const page = Math.max(parseInt(searchParams.page || "1", 10), 1);
-  const status =
-    searchParams.status && Object.values(ReportStatus).includes(searchParams.status as ReportStatus)
-      ? (searchParams.status as ReportStatus)
-      : undefined;
+  const status = normalizeStatus(searchParams.status);
   const state = searchParams.state;
   const city = searchParams.city;
   const search = searchParams.search;
@@ -83,25 +87,30 @@ export default async function ReportsListPage({ searchParams }: { searchParams: 
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {reports.map((report) => (
-              <tr key={report.id} className="hover:bg-gray-50">
-                <Cell>
-                  <Link href={`/admin/reports/${report.id}`} className="font-semibold text-primary">
-                    #{report.id}
-                  </Link>
-                </Cell>
-                <Cell>{formatDate(report.createdAt)}</Cell>
-                <Cell className="font-medium text-gray-900">{report.storeName}</Cell>
-                <Cell>
-                  {report.city}, {report.state}
-                </Cell>
-                <Cell>{cardTypeLabels[report.cardType]}</Cell>
-                <Cell>{formatMoney(report.minAmount)}</Cell>
-                <Cell>
-                  <StatusBadge status={report.status} />
-                </Cell>
-              </tr>
-            ))}
+            {reports.map((report) => {
+              const reportStatus = normalizeStatus(report.status) ?? "NEW";
+              const cardType = normalizeCardType(report.cardType);
+
+              return (
+                <tr key={report.id} className="hover:bg-gray-50">
+                  <Cell>
+                    <Link href={`/admin/reports/${report.id}`} className="font-semibold text-primary">
+                      #{report.id}
+                    </Link>
+                  </Cell>
+                  <Cell>{formatDate(report.createdAt)}</Cell>
+                  <Cell className="font-medium text-gray-900">{report.storeName}</Cell>
+                  <Cell>
+                    {report.city}, {report.state}
+                  </Cell>
+                  <Cell>{cardTypeLabels[cardType]}</Cell>
+                  <Cell>{formatMoney(report.minAmount)}</Cell>
+                  <Cell>
+                    <StatusBadge status={reportStatus} />
+                  </Cell>
+                </tr>
+              );
+            })}
             {reports.length === 0 && (
               <tr>
                 <Cell colSpan={7} className="py-8 text-center text-gray-600">
@@ -154,9 +163,9 @@ function Filters({
         <label className="text-xs font-semibold text-gray-700">Status</label>
         <select name="status" defaultValue={initial.status || ""} className="input">
           <option value="">All</option>
-          {Object.values(ReportStatus).map((status) => (
+          {REPORT_STATUSES.map((status) => (
             <option key={status} value={status}>
-              {status.replace(/_/g, " ").toLowerCase()}
+              {statusLabels[status]}
             </option>
           ))}
         </select>

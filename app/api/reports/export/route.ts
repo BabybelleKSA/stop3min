@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "../../../../lib/prisma";
+import type { ReportStatus } from "@/lib/constants";
+import { REPORT_STATUSES } from "@/lib/constants";
 import { enforceApiAuth } from "../../../../lib/auth";
-import { ReportStatus } from "@prisma/client";
+import { prisma } from "../../../../lib/prisma";
 
 function escapeCSV(value: string | number | null | undefined) {
   if (value === null || value === undefined) return "";
@@ -17,11 +18,10 @@ export async function GET(req: NextRequest) {
   if (unauthorized) return unauthorized;
 
   const params = req.nextUrl.searchParams;
-  const statusParam = params.get("status") || undefined;
-  const status =
-    statusParam && Object.values(ReportStatus).includes(statusParam as ReportStatus)
-      ? (statusParam as ReportStatus)
-      : undefined;
+  const statusParam = params.get("status");
+  const status: ReportStatus | undefined = statusParam
+    ? REPORT_STATUSES.find((s) => s === statusParam)
+    : undefined;
   const state = params.get("state") || undefined;
   const city = params.get("city") || undefined;
   const search = params.get("search") || undefined;

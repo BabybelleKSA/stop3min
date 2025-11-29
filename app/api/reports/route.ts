@@ -1,8 +1,9 @@
+import type { ReportStatus } from "@/lib/constants";
+import { REPORT_STATUSES } from "@/lib/constants";
 import { NextRequest, NextResponse } from "next/server";
+import { enforceApiAuth } from "../../../lib/auth";
 import { prisma } from "../../../lib/prisma";
 import { reportCreateSchema, reportsQuerySchema } from "../../../lib/validators";
-import { enforceApiAuth } from "../../../lib/auth";
-import { ReportStatus } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
@@ -43,9 +44,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Invalid query params" }, { status: 400 });
   }
 
-  const { page, limit, status, state, city, search } = parsed.data;
+  const { page, limit, status: statusParam, state, city, search } = parsed.data;
+  const status: ReportStatus | undefined = statusParam
+    ? REPORT_STATUSES.find((s) => s === statusParam)
+    : undefined;
   const where = {
-    ...(status ? { status: status as ReportStatus } : {}),
+    ...(status ? { status } : {}),
     ...(state ? { state: state.toUpperCase() } : {}),
     ...(city ? { city: { contains: city, mode: "insensitive" } } : {}),
     ...(search

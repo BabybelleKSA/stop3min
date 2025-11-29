@@ -1,5 +1,5 @@
-import { ReportStatus } from "@prisma/client";
-import { statusLabels } from "../lib/utils";
+import type { ReportStatus } from "@/lib/constants";
+import { statusLabels } from "@/lib/utils";
 
 const colorMap: Record<ReportStatus, string> = {
   NEW: "bg-blue-100 text-blue-800",
@@ -10,9 +10,10 @@ const colorMap: Record<ReportStatus, string> = {
 };
 
 export function StatusBadge({ status }: { status: ReportStatus }) {
+  const label = statusLabels[status] ?? status;
   return (
     <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${colorMap[status]}`}>
-      {statusLabels[status]}
+      {label}
     </span>
   );
 }

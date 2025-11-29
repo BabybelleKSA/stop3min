@@ -1,8 +1,10 @@
 "use client";
 
+import type { ReportStatus } from "@/lib/constants";
+import { REPORT_STATUSES } from "@/lib/constants";
+import { statusLabels } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { ReportStatus } from "@prisma/client";
 
 type Props = {
   id: number;
@@ -51,9 +53,9 @@ export function ReportActions({ id, status, followUpNotes, networksReportedTo }:
       <div>
         <label className="text-xs font-semibold text-gray-700">Status</label>
         <select name="status" defaultValue={status} className="input">
-          {Object.values(ReportStatus).map((s) => (
+          {REPORT_STATUSES.map((s) => (
             <option key={s} value={s}>
-              {s.replace(/_/g, " ").toLowerCase()}
+              {statusLabels[s]}
             </option>
           ))}
         </select>
