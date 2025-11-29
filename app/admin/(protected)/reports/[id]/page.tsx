@@ -6,6 +6,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ReportActions } from "./report-actions";
 
+export const dynamic = "force-dynamic";
+
 type Props = {
   params: { id: string };
 };

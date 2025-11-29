@@ -6,6 +6,8 @@ import Link from "next/link";
 import type { Route } from "next";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 const PAGE_SIZE = 20;
 
 type SearchParams = {
