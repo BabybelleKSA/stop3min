@@ -4,7 +4,7 @@ import { REPORT_STATUSES } from "@/lib/constants";
 import { enforceApiAuth } from "../../../../lib/auth";
 import { prisma } from "../../../../lib/prisma";
 
-function escapeCSV(value: string | number | null | undefined) {
+function escapeCSV(value: string | number | boolean | null | undefined) {
   if (value === null || value === undefined) return "";
   const str = String(value);
   if (str.includes(",") || str.includes('"') || str.includes("\n")) {

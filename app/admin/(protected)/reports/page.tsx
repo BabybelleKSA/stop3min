@@ -3,6 +3,7 @@ import { CARD_TYPES, REPORT_STATUSES } from "@/lib/constants";
 import { StatusBadge } from "../../../../components/StatusBadge";
 import { cardTypeLabels, formatDate, formatMoney, statusLabels } from "../../../../lib/utils";
 import Link from "next/link";
+import type { Route } from "next";
 import { prisma } from "../../../../lib/prisma";
 
 const PAGE_SIZE = 20;
@@ -189,10 +190,10 @@ function Pagination({
   if (query.city) params.set("city", query.city);
   if (query.search) params.set("search", query.search);
 
-  const makeLink = (nextPage: number) => {
+  const makeLink = (nextPage: number): Route => {
     const newParams = new URLSearchParams(params);
     newParams.set("page", nextPage.toString());
-    return `/admin/reports?${newParams.toString()}`;
+    return `/admin/reports?${newParams.toString()}` as Route;
   };
 
   return (
